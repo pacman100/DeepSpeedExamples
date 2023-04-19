@@ -286,7 +286,7 @@ def main():
     )
 
     if args.gradient_checkpointing:
-        model.gradient_checkpointing_enable()
+        model.module.gradient_checkpointing_enable()
 
     # Train!
     print_rank_0("***** Running training *****", args.global_rank)
