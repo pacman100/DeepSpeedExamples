@@ -12,11 +12,7 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
 
-from transformers import (
-    AutoTokenizer,
-    SchedulerType,
-    get_scheduler,
-)
+from transformers import AutoTokenizer, SchedulerType, get_scheduler, AutoModelForCausalLM
 
 from peft import LoraConfig, get_peft_model, PeftModel
 
@@ -24,7 +20,7 @@ import deepspeed
 from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from utils.model.model_utils import create_critic_model
+from utils.model.model_utils import create_critic_model, create_actor_critic_model
 from utils.data.data_utils import create_prompt_dataset, DataCollatorReward
 from utils.utils import (
     print_rank_0,
@@ -182,7 +178,14 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, fast_tokenizer=True)
     tokenizer.pad_token = tokenizer.eos_token
 
-    rm_model = create_critic_model(args.model_name_or_path, tokenizer, ds_config, args.num_padding_at_beginning)
+    rm_model = create_actor_critic_model(
+        model_name_or_path=args.model_name_or_path,
+        tokenizer=tokenizer,
+        ds_config=ds_config,
+        model_class=AutoModelForCausalLM,
+        num_padding_at_beginning=args.num_padding_at_beginning,
+    )
+    # rm_model = create_critic_model(args.model_name_or_path, tokenizer, ds_config, args.num_padding_at_beginning)
 
     if args.use_lora and args.gradient_checkpointing:
         if hasattr(rm_model.rwtranrsformer, "enable_input_require_grads"):
@@ -307,7 +310,7 @@ def main():
         mean_loss = 0
         for step, batch in enumerate(train_dataloader):
             batch = to_device(batch, device)
-            outputs = rm_model(**batch, use_cache=False)
+            outputs = rm_model.forward_with_rm_loss(**batch, use_cache=False)
             loss = outputs["loss"]
             rm_model.backward(loss)
             rm_model.step()
@@ -336,8 +339,9 @@ def main():
                 )
         else:
             state_dict = model_to_save.state_dict()
-        model_to_save.save_pretrained(args.output_dir, state_dict=state_dict)
-        tokenizer.save_pretrained(args.output_dir)
+        if args.local_rank in [-1, 0]:
+            model_to_save.save_pretrained(args.output_dir, state_dict=state_dict)
+            tokenizer.save_pretrained(args.output_dir)
 
 
 if __name__ == "__main__":

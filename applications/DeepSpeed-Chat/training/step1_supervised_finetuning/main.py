@@ -39,7 +39,7 @@ from utils.utils import (
 )
 from utils.ds_utils import get_train_ds_config
 from utils.module.lora import convert_linear_layer_to_lora, convert_lora_to_linear_layer, only_optimize_lora_parameters
-from utils.model.model_utils import create_hf_model
+from utils.model.model_utils import create_hf_model, create_actor_critic_model
 
 
 def parse_args():
@@ -182,7 +182,12 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, fast_tokenizer=True)
     tokenizer.pad_token = tokenizer.eos_token
 
-    model = create_hf_model(AutoModelForCausalLM, args.model_name_or_path, tokenizer, ds_config)
+    model = create_actor_critic_model(
+        model_name_or_path=args.model_name_or_path,
+        tokenizer=tokenizer,
+        ds_config=ds_config,
+        model_class=AutoModelForCausalLM,
+    )
 
     if args.use_lora and args.gradient_checkpointing:
         if hasattr(model, "enable_input_require_grads"):
