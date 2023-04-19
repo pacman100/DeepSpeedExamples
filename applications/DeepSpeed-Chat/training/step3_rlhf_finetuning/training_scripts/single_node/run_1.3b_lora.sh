@@ -15,8 +15,8 @@ if [ "$ZERO_STAGE" == "" ]; then
 fi
 mkdir -p $OUTPUT
 
-ACTOR_MODEL_PATH= $3 # Provide the ckpt path of the actor model
-CRITIC_MODEL_PATH= $4 # Provide the ckpt path of the critic model
+ACTOR_MODEL_PATH=$3 # Provide the ckpt path of the actor model
+CRITIC_MODEL_PATH=$4 # Provide the ckpt path of the critic model
 
 Num_Padding_at_Beginning=1 # this is model related
 

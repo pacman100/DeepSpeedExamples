@@ -328,8 +328,9 @@ def main():
                 )
         else:
             state_dict = model_to_save.state_dict()
-        model_to_save.save_pretrained(args.output_dir, state_dict=state_dict)
-        tokenizer.save_pretrained(args.output_dir)
+        if args.local_rank in [-1, 0]:
+            model_to_save.save_pretrained(args.output_dir, state_dict=state_dict)
+            tokenizer.save_pretrained(args.output_dir)
 
 
 if __name__ == "__main__":
