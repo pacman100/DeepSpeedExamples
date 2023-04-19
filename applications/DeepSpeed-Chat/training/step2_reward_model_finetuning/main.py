@@ -311,6 +311,7 @@ def main():
         for step, batch in enumerate(train_dataloader):
             batch = to_device(batch, device)
             outputs = rm_model.forward_with_rm_loss(**batch, use_cache=False)
+            print(outputs)
             loss = outputs["loss"]
             rm_model.backward(loss)
             rm_model.step()
