@@ -202,6 +202,7 @@ def main():
             target_modules=taerget_modules,
             lora_dropout=args.lora_dropout,
             bias=args.lora_bias,
+            modules_to_save=["v_head"],
         )
         rm_model = get_peft_model(rm_model, config)
         rm_model.print_trainable_parameters()

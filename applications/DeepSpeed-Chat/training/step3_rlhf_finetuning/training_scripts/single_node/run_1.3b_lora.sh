@@ -5,22 +5,26 @@
 # DeepSpeed Team
 
 
-ACTOR_ZERO_STAGE="--actor_zero_stage 2"
-CRITIC_ZERO_STAGE="--critic_zero_stage 2"
+OUTPUT=$1
+ZERO_STAGE=$2
+if [ "$OUTPUT" == "" ]; then
+    OUTPUT=./output
+fi
+if [ "$ZERO_STAGE" == "" ]; then
+    ZERO_STAGE=0
+fi
+mkdir -p $OUTPUT
+
 ACTOR_MODEL_PATH= # Provide the ckpt path of the actor model
 CRITIC_MODEL_PATH= # Provide the ckpt path of the critic model
-
-OUTPUT="./output"
 
 Num_Padding_at_Beginning=1 # this is model related
 
 Actor_Lr=5e-4
 Critic_Lr=5e-6
 
-mkdir -p $OUTPUT
-
 deepspeed --master_port 12346 main.py \
-   --data_path Dahoas/rm-static Dahoas/full-hh-rlhf Dahoas/synthetic-instruct-gptj-pairwise yitingxie/rlhf-reward-datasets openai/webgpt_comparisons stanfordnlp/SHP \
+   --data_path Dahoas/rm-static \
    --data_split 2,4,4 \
    --actor_model_name_or_path $ACTOR_MODEL_PATH \
    --critic_model_name_or_path $CRITIC_MODEL_PATH \
@@ -40,10 +44,14 @@ deepspeed --master_port 12346 main.py \
    --gradient_accumulation_steps 1 \
    --num_warmup_steps 100 \
    --deepspeed --seed 1234 \
-   ${ACTOR_ZERO_STAGE} \
-   ${CRITIC_ZERO_STAGE} \
-   --actor_lora_dim 128 \
+   --zero_stage $ZERO_STAGE \
+   --use_lora \
+   --lora_r 64 \
+   --lora_alpha 128 \
+   --lora_target_modules "q_proj,v_proj" \
+   --lora_dropout 0.05 \
+   --lora_bias "none" \
+   --gradient_checkpointing \
    --enable_hybrid_engine \
-   --actor_lora_module_name decoder.layers. \
    --output_dir $OUTPUT \
     &> $OUTPUT/training.log
