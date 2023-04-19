@@ -176,6 +176,7 @@ class ActorCriticModel(nn.Module):
             self.v_head = nn.Linear(self.config.n_embd, 1, bias=False)
         self.rwtranrsformer = base_model
         self.PAD_ID = tokenizer.pad_token_id
+        self.forward = self.rwtranrsformer.forward
 
     def gradient_checkpointing_enable(self):
         self.rwtranrsformer.gradient_checkpointing_enable()
