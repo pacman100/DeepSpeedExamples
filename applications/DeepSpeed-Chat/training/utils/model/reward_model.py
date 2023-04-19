@@ -253,7 +253,7 @@ class ActorCriticModel(nn.Module):
             output_hidden_states=True,
         )
 
-        hidden_states = transformer_outputs.hidden_states
+        hidden_states = transformer_outputs.hidden_states[-1]
         rewards = self.v_head(hidden_states).squeeze(-1)
         chosen_mean_scores = []
         rejected_mean_scores = []
