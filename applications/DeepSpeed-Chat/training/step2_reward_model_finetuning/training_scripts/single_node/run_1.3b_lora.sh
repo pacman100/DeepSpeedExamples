@@ -13,7 +13,7 @@ fi
 if [ "$ZERO_STAGE" == "" ]; then
     ZERO_STAGE=0
 fi
-mkdir -p $OUTPUT_PATH
+mkdir -p $OUTPUT
 
 deepspeed main.py \
    --data_path Dahoas/rm-static \
@@ -38,5 +38,5 @@ deepspeed main.py \
    --lora_dropout 0.05 \
    --lora_bias "none" \
    --gradient_checkpointing \
-   --output_dir $OUTPUT_PATH \
-   &> $OUTPUT_PATH/training.log
+   --output_dir $OUTPUT \
+   &> $OUTPUT/training.log
