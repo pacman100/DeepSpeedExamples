@@ -251,6 +251,7 @@ class ActorCriticModel(nn.Module):
             use_cache=use_cache,
             return_dict=True,
         )
+        print(transformer_outputs)
 
         hidden_states = transformer_outputs.hidden_states
         rewards = self.v_head(hidden_states).squeeze(-1)
