@@ -185,14 +185,14 @@ def main():
     rm_model = create_critic_model(args.model_name_or_path, tokenizer, ds_config, args.num_padding_at_beginning)
 
     if args.use_lora and args.gradient_checkpointing:
-        if hasattr(rm_model, "enable_input_require_grads"):
-            rm_model.enable_input_require_grads()
+        if hasattr(rm_model.rwtranrsformer, "enable_input_require_grads"):
+            rm_model.rwtranrsformer.enable_input_require_grads()
         else:
 
             def make_inputs_require_grad(module, input, output):
                 output.requires_grad_(True)
 
-            rm_model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+            rm_model.rwtranrsformer.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     if args.use_lora:
         taerget_modules = args.lora_target_modules.split(",") if args.lora_target_modules else None
