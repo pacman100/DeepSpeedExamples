@@ -19,6 +19,7 @@ deepspeed main.py \
    --data_path Dahoas/rm-static \
    --data_split 2,4,4 \
    --model_name_or_path facebook/opt-1.3b \
+   --num_padding_at_beginning 1 \
    --per_device_train_batch_size 8 \
    --per_device_eval_batch_size 8 \
    --max_seq_len 512 \
