@@ -15,8 +15,8 @@ if [ "$ZERO_STAGE" == "" ]; then
 fi
 mkdir -p $OUTPUT
 
-ACTOR_MODEL_PATH= # Provide the ckpt path of the actor model
-CRITIC_MODEL_PATH= # Provide the ckpt path of the critic model
+ACTOR_MODEL_PATH= $3 # Provide the ckpt path of the actor model
+CRITIC_MODEL_PATH= $4 # Provide the ckpt path of the critic model
 
 Num_Padding_at_Beginning=1 # this is model related
 
@@ -28,6 +28,7 @@ deepspeed --master_port 12346 main.py \
    --data_split 2,4,4 \
    --actor_model_name_or_path $ACTOR_MODEL_PATH \
    --critic_model_name_or_path $CRITIC_MODEL_PATH \
+   --model_name_or_path facebook/opt-1.3b \
    --num_padding_at_beginning 1 \
    --per_device_train_batch_size 4 \
    --per_device_mini_train_batch_size 4 \
