@@ -304,13 +304,13 @@ class PeftDeepSpeedPPOTrainer:
             self.actor_critic_model.set_adapter("ref")
             output_ref = self.rlhf_engine.engine(seq, attention_mask=attention_mask)
             self.actor_critic_model.set_adapter("reward")
-            reward_score = self.rlhf_engine.engine.forward_value(
+            reward_score = self.rlhf_engine.engine.module.forward_value(
                 seq, attention_mask, prompt_length=self.prompt_length
             )["chosen_end_scores"].detach()
             self.actor_critic_model.set_adapter("critic")
-            values = self.rlhf_engine.engine.forward_value(seq, attention_mask, return_value_only=True).detach()[
-                :, :-1
-            ]
+            values = self.rlhf_engine.engine.module.forward_value(
+                seq, attention_mask, return_value_only=True
+            ).detach()[:, :-1]
 
         logits = output.logits
         logits_ref = output_ref.logits

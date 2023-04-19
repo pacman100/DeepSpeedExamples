@@ -247,7 +247,7 @@ def main():
         for step, batch in enumerate(eval_dataloader):
             batch = to_device(batch, device)
             with torch.no_grad():
-                outputs = model.forward_with_rm_loss(**batch)
+                outputs = model.module.forward_with_rm_loss(**batch)
 
             chosen = outputs["chosen_mean_scores"]
             rejected = outputs["rejected_mean_scores"]
@@ -310,8 +310,7 @@ def main():
         mean_loss = 0
         for step, batch in enumerate(train_dataloader):
             batch = to_device(batch, device)
-            outputs = rm_model.forward_with_rm_loss(**batch, use_cache=False)
-            print(outputs)
+            outputs = rm_model.module.forward_with_rm_loss(**batch, use_cache=False)
             loss = outputs["loss"]
             rm_model.backward(loss)
             rm_model.step()
