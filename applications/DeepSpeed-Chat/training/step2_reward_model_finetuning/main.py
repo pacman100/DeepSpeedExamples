@@ -247,7 +247,7 @@ def main():
         for step, batch in enumerate(eval_dataloader):
             batch = to_device(batch, device)
             with torch.no_grad():
-                outputs = model(**batch)
+                outputs = model.forward_with_rm_loss(**batch)
 
             chosen = outputs["chosen_mean_scores"]
             rejected = outputs["rejected_mean_scores"]
