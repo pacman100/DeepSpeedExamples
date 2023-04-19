@@ -24,6 +24,7 @@ deepspeed main.py \
    --seed 1234 \
    --zero_stage 0 \
    --lora_r 64 \
+   --use_lora \
    --lora_alpha 128 \
    --lora_target_modules "q_proj,v_proj" \
    --lora_dropout 0.05 \
