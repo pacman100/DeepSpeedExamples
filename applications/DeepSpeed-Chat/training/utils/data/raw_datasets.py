@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # DeepSpeed Team
-from datasets import load_dataset
+from datasets import load_dataset, DatasetDict
 from torch.utils.data import Subset
 import re
 
@@ -47,7 +47,12 @@ class DahoasRmstaticDataset(PromptRawDataset):
         super().__init__(output_path, seed, local_rank)
         self.dataset_name = "Dahoas/rm-static"
         self.dataset_name_clean = "Dahoas_rm_static"
-        self.raw_datasets = load_dataset("Dahoas/rm-static", split="train[:1024]+test[:256]")
+        self.raw_datasets = DatasetDict(
+            {
+                "train": load_dataset("Dahoas/rm-static", split="train[:1024]"),
+                "test": load_dataset("Dahoas/rm-static", split="test[:256]"),
+            }
+        )
 
     def get_train_data(self):
         return self.raw_datasets["train"]
