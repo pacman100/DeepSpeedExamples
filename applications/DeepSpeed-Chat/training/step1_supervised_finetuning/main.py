@@ -200,11 +200,11 @@ def main():
             model.rwtranrsformer.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     if args.use_lora:
-        taerget_modules = args.lora_target_modules.split(",") if args.lora_target_modules else None
+        target_modules = args.lora_target_modules.split(",") if args.lora_target_modules else None
         config = LoraConfig(
             r=args.lora_r,
             lora_alpha=args.lora_alpha,
-            target_modules=taerget_modules,
+            target_modules=target_modules,
             lora_dropout=args.lora_dropout,
             bias=args.lora_bias,
         )
