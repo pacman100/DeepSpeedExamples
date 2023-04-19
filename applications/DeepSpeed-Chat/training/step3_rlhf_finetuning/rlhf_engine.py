@@ -294,17 +294,11 @@ class PeftDeepSpeedRLHFEngine:
         # LoRA adapters for `actor`, `ref`, `critic` and `reward`
         if self.args.use_lora:
             model = PeftModel.from_pretrained(model, actor_model_name_or_path, is_trainable=True, adapter_name="actor")
-            print(model)
-            print(model.modules_to_save)
             model.load_adapter(actor_model_name_or_path, is_trainable=False, adapter_name="ref")
-            print(model)
-            print(model.modules_to_save)
             model.load_adapter(critic_model_name_or_path, is_trainable=True, adapter_name="critic")
-            print(model)
-            print(model.modules_to_save)
             model.load_adapter(critic_model_name_or_path, is_trainable=False, adapter_name="reward")
             print(model)
-            print(model.modules_to_save)
+            model.print_trainable_parameters()
 
         if self.args.enable_ema:
             model.load_adapter(actor_model_name_or_path, is_trainable=False, adapter_name="actor_ema")
