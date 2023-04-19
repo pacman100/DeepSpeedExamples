@@ -369,7 +369,7 @@ class PeftDeepSpeedPPOTrainer:
         self.rlhf_engine.engine.step()
 
         self.actor_critic_model.set_adapter("critic")
-        value = self.rlhf_engine.engine.forward_value(**batch, return_value_only=True, use_cache=False)[:, :-1]
+        value = self.rlhf_engine.engine.module.forward_value(**batch, return_value_only=True, use_cache=False)[:, :-1]
         critic_loss = self.critic_loss_fn(value[:, start:], old_values[:, start:], returns, action_mask[:, start:])
         self.rlhf_engine.engine.backward(critic_loss)
         self.rlhf_engine.engine.step()
