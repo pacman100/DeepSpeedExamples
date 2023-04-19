@@ -281,6 +281,16 @@ class PeftDeepSpeedRLHFEngine:
             model_class=AutoModelForCausalLM,
         )
 
+        if self.args.use_lora and self.args.gradient_checkpointing:
+            if hasattr(model.rwtranrsformer, "enable_input_require_grads"):
+                model.rwtranrsformer.enable_input_require_grads()
+            else:
+
+                def make_inputs_require_grad(module, input, output):
+                    output.requires_grad_(True)
+
+                model.rwtranrsformer.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+
         # LoRA adapters for `actor`, `ref`, `critic` and `reward`
         if self.args.use_lora:
             model = PeftModel.from_pretrained(model, actor_model_name_or_path, is_trainable=True, adapter_name="actor")

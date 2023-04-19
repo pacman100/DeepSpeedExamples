@@ -190,14 +190,14 @@ def main():
     )
 
     if args.use_lora and args.gradient_checkpointing:
-        if hasattr(model, "enable_input_require_grads"):
-            model.enable_input_require_grads()
+        if hasattr(model.rwtranrsformer, "enable_input_require_grads"):
+            model.rwtranrsformer.enable_input_require_grads()
         else:
 
             def make_inputs_require_grad(module, input, output):
                 output.requires_grad_(True)
 
-            model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+            model.rwtranrsformer.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
 
     if args.use_lora:
         taerget_modules = args.lora_target_modules.split(",") if args.lora_target_modules else None
